@@ -20,7 +20,7 @@ public class Controller{
     private GridPane PieceGrids;
 
     public HashMap<Point, String> allBoardPieces = new HashMap<>();
-    private HashSet<Point> possibleMoves = new HashSet<>();
+    public HashSet<Point> possibleMoves = new HashSet<>();
 
 
 
@@ -56,8 +56,8 @@ public class Controller{
                             newcircle.setRadius(25.0);
                             PieceGrids.getChildren().remove(clickNode);
                             PieceGrids.add(newcircle, tempc, tempr);
-
                         }
+                        possibleMoves.clear();
 
                     });
                 }
@@ -98,68 +98,43 @@ public class Controller{
         }
         return false;
     }
-    public boolean movesPieces(int newc, int newr){
+    public void movesPieces(int c, int r){
 
         if (playerturn == 0) {
-            if (isValidRange(newc + 1) && isValidRange(newr - 1) &&
-                    checkTileCollision(newc + 1, newr - 1)) {
-                possibleMoves.add(new Point(newc + 1, newr - 1));
-
+            if(isValidRange(c-1) && isValidRange(r-1)&& checkMoves(c-1,r-1) == false){
+                checkMoves(c-2,r-2);
             }
-
-            if (isValidRange(newc - 1) && isValidRange(newr - 1) &&
-                    checkTileCollision(newc - 1, newr - 1)) {
-                possibleMoves.add(new Point(newc - 1, newr - 1));
-
-            }
-            if (checkTileCollision(newc + 1, newr - 1) == false) {
-                Point t = new Point(newc + 1, newr - 1);
-
-                if(allBoardPieces.get(t) != getColor(playerturn)) {
-                    return movesPieces(newc + 1, newr - 1);
-
-                }
-            }
-            if (checkTileCollision(newc - 1, newr - 1) == false) {
-                Point t = new Point(newc - 1, newr - 1);
-                if(allBoardPieces.get(t) != getColor(playerturn)) {
-                    return movesPieces(newc - 1, newr - 1);
-                }
+            if(isValidRange(c+1) && isValidRange(r-1)&& checkMoves(c+1,r-1)==false){
+                checkMoves(c+2,r-2);
             }
         }
-        if(playerturn == 1){
-            System.out.println("collect");
-            if (isValidRange(newc + 1) && isValidRange(newr + 1) &&
-                    checkTileCollision(newc + 1, newr + 1)) {
-                possibleMoves.add(new Point(newc + 1, newr + 1));
+        if(playerturn == 1) {
+            if(isValidRange(c-1) && isValidRange(r+1)&& checkMoves(c-1,r+1) == false){
+                System.out.println(c-2 +" "+ (r+2));
+                checkMoves(c-2,r+2);
             }
-
-            if (isValidRange(newc - 1) && isValidRange(newr + 1) &&
-                    checkTileCollision(newc - 1, newr + 1)) {
-                possibleMoves.add(new Point(newc - 1, newr + 1));
-            }
-            if (checkTileCollision(newc + 1, newr + 1) == false) {
-                Point t = new Point(newc + 1, newr + 1);
-                if(allBoardPieces.get(t) != getColor(playerturn)) {
-                    return movesPieces(newc + 1, newr + 1);
-                }
-            }
-            if (checkTileCollision(newc - 1, newr + 1) == false) {
-                Point t = new Point(newc - 1, newr + 1);
-                if(allBoardPieces.get(t) != getColor(playerturn)) {
-                    return movesPieces(newc - 1, newr + 1);
-                }
+            if(isValidRange(c+1) && isValidRange(r+1)&& checkMoves(c+1,r+1)==false){
+                System.out.println(c+2 +" "+(r+2));
+                checkMoves(c+2,r+2);
             }
         }
-        return true;
     }
+    public boolean checkMoves(int newc, int newr) {
 
-
+        if (checkTileCollision(newc , newr )) {
+            System.out.println("In checkMoves");
+            Point temp = new Point(newc,newr);
+            possibleMoves.add(temp);
+            return true;
+        }
+        return false;
+    }
     public boolean checkTileCollision(int c, int r){
         //check if diagonals of first click has other tiles
 
         Point nc = new Point(c, r);
         if(allBoardPieces.keySet().contains(nc)){
+
             return false;
         }
         return true;
@@ -167,6 +142,7 @@ public class Controller{
     public void getAllPieces(){
         //Point(x,y)
         //x is newc, y is newr
+        allBoardPieces.clear();
         for(Node i: PieceGrids.getChildren()){
 
             if(i instanceof Circle) {
