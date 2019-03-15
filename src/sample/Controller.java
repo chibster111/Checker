@@ -58,11 +58,12 @@ public class Controller{
                             PieceGrids.add(newcircle, tempc, tempr);
                         }
                         possibleMoves.clear();
+                        playerturn = getTurn(playerturn);
 
                     });
                 }
             }
-            playerturn = getTurn(playerturn);
+
 
 
         }
