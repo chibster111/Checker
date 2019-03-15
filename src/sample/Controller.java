@@ -37,20 +37,20 @@ public class Controller{
             System.out.println(playerturn);
             System.out.println(getColor(playerturn));
             System.out.println(nodeC.getFill().toString());
-            if(nodeC.getFill().toString().equals(getColor(playerturn))){
+            if(nodeC.getFill().toString().equals(getColor(playerturn))) {
                 movesPieces(colIndex, rowIndex);
-                for(Point er: possibleMoves){
-                    System.out.println(er.y +" "+er.x);
+                for (Point er : possibleMoves) {
+                    System.out.println(er.y + " " + er.x);
                 }
-                for (Node n: PieceGrids.getChildren()){
+                for (Node n : PieceGrids.getChildren()) {
                     int tempc = GridPane.getColumnIndex(n);
                     int tempr = GridPane.getRowIndex(n);
-                    Point temppoint = new Point(tempc,tempr);
+                    Point temppoint = new Point(tempc, tempr);
 
-                    n.setOnMouseClicked(ee ->{
+                    n.setOnMouseClicked(ee -> {
                         System.out.println("Second click");
 
-                        if(possibleMoves.contains(temppoint)){
+                        if (possibleMoves.contains(temppoint)) {
                             Circle newcircle = new Circle();
                             newcircle.setFill(nodeC.getFill());
                             newcircle.setRadius(25.0);
@@ -58,14 +58,12 @@ public class Controller{
                             PieceGrids.add(newcircle, tempc, tempr);
                         }
                         possibleMoves.clear();
-                        playerturn = getTurn(playerturn);
+
 
                     });
+                    playerturn = getTurn(playerturn);
                 }
             }
-
-
-
         }
 
     }
