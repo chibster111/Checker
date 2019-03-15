@@ -25,7 +25,7 @@ public class Controller{
 
 
     public void boardClicked(MouseEvent e){
-
+        System.out.println("First click");
         getAllPieces();
 
         Node clickNode = e.getPickResult().getIntersectedNode();
@@ -34,26 +34,35 @@ public class Controller{
         if(clickNode instanceof Circle){
 
             Circle nodeC = (Circle)clickNode;
+            System.out.println(playerturn);
+            System.out.println(getColor(playerturn));
             System.out.println(nodeC.getFill().toString());
             if(nodeC.getFill().toString().equals(getColor(playerturn))){
                 movesPieces(colIndex, rowIndex);
+                for(Point er: possibleMoves){
+                    System.out.println(er.y +" "+er.x);
+                }
                 for (Node n: PieceGrids.getChildren()){
                     int tempc = GridPane.getColumnIndex(n);
                     int tempr = GridPane.getRowIndex(n);
                     Point temppoint = new Point(tempc,tempr);
+
                     n.setOnMouseClicked(ee ->{
+                        System.out.println("Second click");
+
                         if(possibleMoves.contains(temppoint)){
                             Circle newcircle = new Circle();
                             newcircle.setFill(nodeC.getFill());
                             newcircle.setRadius(25.0);
                             PieceGrids.getChildren().remove(clickNode);
                             PieceGrids.add(newcircle, tempc, tempr);
-                            playerturn = getTurn(playerturn);
+
                         }
 
                     });
                 }
             }
+            playerturn = getTurn(playerturn);
 
 
         }
@@ -72,7 +81,7 @@ public class Controller{
             return "0xffffffff";
         }
         else{
-            return "ff1f1f";
+            return "0xff1f1fff";
         }
     }
 
@@ -95,26 +104,31 @@ public class Controller{
             if (isValidRange(newc + 1) && isValidRange(newr - 1) &&
                     checkTileCollision(newc + 1, newr - 1)) {
                 possibleMoves.add(new Point(newc + 1, newr - 1));
+
             }
 
             if (isValidRange(newc - 1) && isValidRange(newr - 1) &&
                     checkTileCollision(newc - 1, newr - 1)) {
-                possibleMoves.add(new Point(newc + 1, newr - 1));
+                possibleMoves.add(new Point(newc - 1, newr - 1));
+
             }
             if (checkTileCollision(newc + 1, newr - 1) == false) {
                 Point t = new Point(newc + 1, newr - 1);
+
                 if(allBoardPieces.get(t) != getColor(playerturn)) {
                     return movesPieces(newc + 1, newr - 1);
+
                 }
             }
             if (checkTileCollision(newc - 1, newr - 1) == false) {
-                Point t = new Point(newc + 1, newr - 1);
+                Point t = new Point(newc - 1, newr - 1);
                 if(allBoardPieces.get(t) != getColor(playerturn)) {
                     return movesPieces(newc - 1, newr - 1);
                 }
             }
         }
         if(playerturn == 1){
+            System.out.println("collect");
             if (isValidRange(newc + 1) && isValidRange(newr + 1) &&
                     checkTileCollision(newc + 1, newr + 1)) {
                 possibleMoves.add(new Point(newc + 1, newr + 1));
@@ -122,7 +136,7 @@ public class Controller{
 
             if (isValidRange(newc - 1) && isValidRange(newr + 1) &&
                     checkTileCollision(newc - 1, newr + 1)) {
-                possibleMoves.add(new Point(newc + 1, newr + 1));
+                possibleMoves.add(new Point(newc - 1, newr + 1));
             }
             if (checkTileCollision(newc + 1, newr + 1) == false) {
                 Point t = new Point(newc + 1, newr + 1);
@@ -131,7 +145,7 @@ public class Controller{
                 }
             }
             if (checkTileCollision(newc - 1, newr + 1) == false) {
-                Point t = new Point(newc + 1, newr + 1);
+                Point t = new Point(newc - 1, newr + 1);
                 if(allBoardPieces.get(t) != getColor(playerturn)) {
                     return movesPieces(newc - 1, newr + 1);
                 }
