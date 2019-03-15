@@ -61,8 +61,8 @@ public class Controller{
 
 
                     });
-                    playerturn = getTurn(playerturn);
                 }
+                playerturn = getTurn(playerturn);
             }
         }
 
