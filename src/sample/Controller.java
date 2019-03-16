@@ -1,7 +1,8 @@
 package sample;
 import javafx.fxml.FXML;
 import javafx.scene.input.DragEvent;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.fxml.Initializable;
 import javafx.scene.input.MouseEvent;
@@ -11,7 +12,11 @@ import java.net.URL;
 import java.util.*;
 
 import javafx.scene.Node;
+import javafx.scene.text.Text;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
+import javax.sound.midi.SysexMessage;
 import java.util.Map.Entry;
 
 public class Controller{
@@ -25,36 +30,53 @@ public class Controller{
 
 
     public void boardClicked(MouseEvent e){
-        System.out.println("First click");
         getAllPieces();
 
         Node clickNode = e.getPickResult().getIntersectedNode();
         int colIndex = PieceGrids.getColumnIndex(clickNode);
         int rowIndex = PieceGrids.getRowIndex(clickNode);
-        if(clickNode instanceof Circle){
+        if(clickNode instanceof Circle || clickNode instanceof ImageView){
 
-            Circle nodeC = (Circle)clickNode;
+            movesPieces(clickNode, colIndex, rowIndex);
+            for (Node n : PieceGrids.getChildren()) {
+                n.setOnMouseClicked(ee -> {
+                    int tempc = GridPane.getColumnIndex(n);
+                    int tempr = GridPane.getRowIndex(n);
 
-            if(nodeC.getFill().toString().equals(getColor(playerturn))) {
-                movesPieces(colIndex, rowIndex);
+                    if (possibleMoves.contains(new Point(tempc, tempr))) {
 
-                for (Node n : PieceGrids.getChildren()) {
-
-                    n.setOnMouseClicked(ee -> {
-                        int tempc = GridPane.getColumnIndex(n);
-                        int tempr = GridPane.getRowIndex(n);
-                        System.out.println("Second click");
-                        if (possibleMoves.contains(new Point(tempc, tempr))) {
-                            deletePieceBetween(colIndex,rowIndex,tempc,tempr);
-                            PieceGrids.setColumnIndex(nodeC, tempc);
-                            PieceGrids.setRowIndex(nodeC, tempr);
+                        if (kingRow(playerturn) == tempr) {
+                            makeKing(clickNode, tempc,tempr);
                         }
-                        possibleMoves.clear();
-                    });
-                }
-                playerturn = getTurn(playerturn);
+                        else{
+                            PieceGrids.setColumnIndex(clickNode, tempc);
+                            PieceGrids.setRowIndex(clickNode, tempr);
+                        }
+                        deletePieceBetween(colIndex, rowIndex, tempc, tempr);
+                        playerturn = getTurn(playerturn);
+                    }
+                    possibleMoves.clear();
+
+                });
             }
+
+
         }
+
+    }
+
+    public void makeKing(Node nodec, int tempc, int tempr){
+
+        Image img = new Image("/sample/RedCrown.png");
+        if(playerturn == 0){
+            img = new Image("/sample/WhiteCrown.png");
+        }
+        ImageView crownimage = new ImageView(img);
+        crownimage.setFitHeight(50);
+        crownimage.setFitWidth(50);
+        PieceGrids.getChildren().remove(nodec);
+        PieceGrids.add(crownimage, tempc, tempr);
+
 
     }
     public void deletePieceBetween(int fc, int fr, int sc, int sr){
@@ -73,6 +95,13 @@ public class Controller{
             return 1;
         }
         return 0;
+    }
+
+    public int kingRow(int r){
+        if(r == 0){
+            return 0;
+        }
+        return 7;
     }
 
     public String getColor(int t){
@@ -97,23 +126,43 @@ public class Controller{
         }
         return false;
     }
-    public void movesPieces(int c, int r){
+    public void movesPieces(Node n, int c, int r){
 
         if (playerturn == 0) {
-            if(isValidRange(c-1) && isValidRange(r-1)&& checkMoves(c-1,r-1) == false){
-                checkMoves(c-2,r-2);
+            if (n instanceof Circle){
+                goUp(c,r);
             }
-            if(isValidRange(c+1) && isValidRange(r-1)&& checkMoves(c+1,r-1)==false){
-                checkMoves(c+2,r-2);
+            if(n instanceof ImageView){
+                goUp(c,r);
+                goDown(c,r);
             }
         }
         if(playerturn == 1) {
-            if(isValidRange(c-1) && isValidRange(r+1)&& checkMoves(c-1,r+1) == false){
-                checkMoves(c-2,r+2);
+            if (n instanceof Circle){
+                goDown(c,r);
             }
-            if(isValidRange(c+1) && isValidRange(r+1)&& checkMoves(c+1,r+1)==false){
-                checkMoves(c+2,r+2);
+            if(n instanceof ImageView){
+                goUp(c,r);
+                goDown(c,r);
             }
+        }
+    }
+
+    public void goUp(int c, int r){
+        if(isValidRange(c-1) && isValidRange(r-1)&& checkMoves(c-1,r-1) == false){
+            checkMoves(c-2,r-2);
+        }
+        if(isValidRange(c+1) && isValidRange(r-1)&& checkMoves(c+1,r-1)==false){
+            checkMoves(c+2,r-2);
+        }
+    }
+
+    public void goDown(int c, int r){
+        if(isValidRange(c-1) && isValidRange(r+1)&& checkMoves(c-1,r+1) == false){
+            checkMoves(c-2,r+2);
+        }
+        if(isValidRange(c+1) && isValidRange(r+1)&& checkMoves(c+1,r+1)==false){
+            checkMoves(c+2,r+2);
         }
     }
     public boolean checkMoves(int newc, int newr) {
@@ -138,12 +187,14 @@ public class Controller{
         allBoardPieces.clear();
         for(Node i: PieceGrids.getChildren()){
 
-            if(i instanceof Circle) {
+            if(i instanceof Circle || i instanceof StackPane) {
+
                 int newc = GridPane.getColumnIndex(i);
                 int newr = GridPane.getRowIndex(i);
                 Point nc = new Point(newc, newr);
                 allBoardPieces.put(nc, i);
             }
+
         }
 
     }
