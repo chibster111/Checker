@@ -17,6 +17,10 @@ public class CheckersController {
 
     @FXML
     private GridPane PieceGrids;
+    @FXML
+    private Label player1;
+    @FXML
+    private Label player2;
 
     private Checkers game;
     private String playerturn;
@@ -28,10 +32,11 @@ public class CheckersController {
 
     public void setPlayer(Users player1, Users player2){}
     public void boardClicked(MouseEvent e){
-        game.board.printBoard();
+
         Node clickNode = e.getPickResult().getIntersectedNode();
         int colIndex = PieceGrids.getColumnIndex(clickNode);
         int rowIndex = PieceGrids.getRowIndex(clickNode);
+        System.out.println(game.scoreBoard(game.whiteplayer));
 
         if((clickNode instanceof Circle || clickNode instanceof ImageView)&&
                 clickNode.getId().equals(turnID())) {

@@ -7,8 +7,8 @@ import java.util.Scanner;
 
 public class Checkers {
 
-    private String redplayer;
-    private String whiteplayer;
+    public String redplayer;
+    public String whiteplayer;
     public String currentplayer;
     public Board board;
     public List<Point> possibleMoves = new ArrayList<>();
@@ -21,7 +21,6 @@ public class Checkers {
             int row = piece.get(0);
             int col = piece.get(1);
             cn.getAllPossibleMoves(row,col);
-            System.out.println(cn.possibleMoves);
             List<Integer> tile = cn.selectPiece();
             int tr = tile.get(0);
             int tc = tile.get(1);
@@ -30,7 +29,6 @@ public class Checkers {
 
             }
         }
-        System.out.println("GameOver");
     }
     public Checkers(){
 
@@ -105,17 +103,29 @@ public class Checkers {
         return getNumberOfPieces(whiteplayer) == 0 || getNumberOfPieces(redplayer) == 0;
     }
 
-     int getNumberOfPieces(String player){
+    public int getNumberOfPieces(String player){
         int count = 0;
+        System.out.println("count");
         for (int x = 0; x < this.board.getRows(); x++){
             for(int y = 0; y < this.board.getCols(); y++){
-                if (this.board.getBoard().get(y).get(x).equals(player) || this.board.getBoard().get(y).get(x).equals(playerKing(player))){
+                if (this.board.getBoard().get(x).get(y).equals(player) || this.board.getBoard().get(x).get(y).equals(playerKing(player))){
                     count+=1;
                 }
             }
         }
 
         return count;
+    }
+
+    public int scoreBoard(String player){
+        int total = 0;
+        if(player == whiteplayer){
+            total = 12- getNumberOfPieces(redplayer);
+        }
+        else{
+            total = 12- getNumberOfPieces(whiteplayer);
+        }
+        return total;
     }
 
     public void makeMove(int fr, int fc, int sr, int sc){
@@ -197,8 +207,7 @@ public class Checkers {
 
     private void goUp(int r, int c){
         //This allows tile to go up
-        System.out.println("GoingUp");
-        System.out.println(r+"  "+c);
+
         if(!addFreeTile(r-1,c-1)){
             addFreeTile(r-2,c-2);
         }
