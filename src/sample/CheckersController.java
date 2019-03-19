@@ -36,7 +36,8 @@ public class CheckersController {
         Node clickNode = e.getPickResult().getIntersectedNode();
         int colIndex = PieceGrids.getColumnIndex(clickNode);
         int rowIndex = PieceGrids.getRowIndex(clickNode);
-        System.out.println(game.scoreBoard(game.whiteplayer));
+        // game.scoreBoard(game.whiteplayer)
+        // game.scoreBoard(game.redplayer)
 
         if((clickNode instanceof Circle || clickNode instanceof ImageView)&&
                 clickNode.getId().equals(turnID())) {
