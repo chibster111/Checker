@@ -18,20 +18,22 @@ public class Controller{
     @FXML
     private GridPane PieceGrids;
 
-    private HashMap<Point, Node> allBoardPieces = new HashMap<>();
-    private List<Node> allTilePieces = new ArrayList<>();
-    private HashSet<Point> possibleMoves = new HashSet<>();
+    public HashMap<Point, Node> allBoardPieces = new HashMap<>();
+    public List<Node> allTilePieces = new ArrayList<>();
+    public HashSet<Point> possibleMoves = new HashSet<>();
 
 
 
     public void boardClicked(MouseEvent e){
         getAllPieces();
         Node clickNode = e.getPickResult().getIntersectedNode();
-        int colIndex = GridPane.getColumnIndex(clickNode);
-        int rowIndex = GridPane.getRowIndex(clickNode);
-
+        int colIndex = PieceGrids.getColumnIndex(clickNode);
+        int rowIndex = PieceGrids.getRowIndex(clickNode);
+        System.out.println("First");
         if((clickNode instanceof Circle || clickNode instanceof ImageView)&&
                 clickNode.getId().equals(turnID(playerturn)) ){
+            System.out.println("Second click");
+
             movesPieces(clickNode, colIndex, rowIndex);
             for (Node n : allTilePieces) {
                 n.setOnMouseClicked(ee -> {
@@ -41,8 +43,8 @@ public class Controller{
                             makeKing(clickNode, GridPane.getColumnIndex(n),GridPane.getRowIndex(n));
                         }
                         else{
-                            GridPane.setColumnIndex(clickNode, GridPane.getColumnIndex(n));
-                            GridPane.setRowIndex(clickNode, GridPane.getRowIndex(n));
+                            PieceGrids.setColumnIndex(clickNode, GridPane.getColumnIndex(n));
+                            PieceGrids.setRowIndex(clickNode, GridPane.getRowIndex(n));
                         }
                         deletePieceBetween(colIndex, rowIndex, GridPane.getColumnIndex(n), GridPane.getRowIndex(n));
                         playerturn = switchTurn(playerturn);
@@ -54,7 +56,7 @@ public class Controller{
         }
     }
 
-    private void deletePieceBetween(int fc, int fr, int sc, int sr){
+    public void deletePieceBetween(int fc, int fr, int sc, int sr){
         //If a piece hops over an opposing piece, this deletes that piece hopped
         Point firstp = new Point(fc,fr);
         Point secp = new Point(sc,sr);
@@ -65,7 +67,7 @@ public class Controller{
         }
     }
 
-    private String turnID(int t){
+    public String turnID(int t){
         //Finds the ID of the player turn
         if(t == 0){
             return "White";
@@ -73,7 +75,7 @@ public class Controller{
         return "Red";
     }
 
-    private int switchTurn(int t){
+    public int switchTurn(int t){
         //After each proper turn the player turn is switched
         if(t == 0){
             return 1;
@@ -81,7 +83,7 @@ public class Controller{
         return 0;
     }
 
-    private int kingRow(int r){
+    public int kingRow(int r){
         //Sets the row that a player has to hit to be king
         if(r == 0){
             return 0;
@@ -89,52 +91,55 @@ public class Controller{
         return 7;
     }
 
-    private boolean isValidRange(int number){
+    public boolean isValidRange(int number){
         //Checks if the row or column is within a moving range
-        return number <= 7 && number >= 0;
+        if(number <=7 && number>=0){
+            return true;
+        }
+        return false;
     }
-    private void movesPieces(Node n, int r, int c){
+    public void movesPieces(Node n, int c, int r){
         //This method shows what move each tile from each player can do
         if (playerturn == 0) {
             if (n instanceof Circle){
-                goUp(r,c);
+                goUp(c,r);
             }
             if(n instanceof ImageView){
-                goUp(r,c);
-                goDown(r,c);
+                goUp(c,r);
+                goDown(c,r);
             }
         }
         if(playerturn == 1) {
             if (n instanceof Circle){
-                goDown(r,c);
+                goDown(c,r);
             }
             if(n instanceof ImageView){
-                goUp(r,c);
-                goDown(r,c);
+                goUp(c,r);
+                goDown(c,r);
             }
         }
     }
 
-    private void goUp(int r, int c){
+    public void goUp(int c, int r){
         //This allows tile to go up
-        if(isValidRange(c-1) && isValidRange(r-1)&& !checkMoves(c-1,r-1)){
+        if(isValidRange(c-1) && isValidRange(r-1)&& checkMoves(c-1,r-1) == false){
             checkMoves(c-2,r-2);
         }
-        if(isValidRange(c+1) && isValidRange(r-1)&& !checkMoves(c+1,r-1)){
+        if(isValidRange(c+1) && isValidRange(r-1)&& checkMoves(c+1,r-1)==false){
             checkMoves(c+2,r-2);
         }
     }
 
-    private void goDown(int r, int c){
+    public void goDown(int c, int r){
         //This allows the tile to go down
-        if(isValidRange(c-1) && isValidRange(r+1)&& !checkMoves(c-1,r+1)){
+        if(isValidRange(c-1) && isValidRange(r+1)&& checkMoves(c-1,r+1) == false){
             checkMoves(c-2,r+2);
         }
-        if(isValidRange(c+1) && isValidRange(r+1)&& !checkMoves(c+1,r+1)){
+        if(isValidRange(c+1) && isValidRange(r+1)&& checkMoves(c+1,r+1)==false){
             checkMoves(c+2,r+2);
         }
     }
-    private boolean checkMoves(int newc, int newr) {
+    public boolean checkMoves(int newc, int newr) {
         //if the tile is free, add tile as possible move
         if (checkFreeTile(newc , newr )) {
             Point temp = new Point(newc,newr);
@@ -143,12 +148,15 @@ public class Controller{
         }
         return false;
     }
-    private boolean checkFreeTile(int r, int c){
+    public boolean checkFreeTile(int c, int r){
         //check if diagonals of first click has other tiles
-        return !allBoardPieces.keySet().contains(new Point(c, r));
+        if(allBoardPieces.keySet().contains(new Point(c, r))){
+            return false;
+        }
+        return true;
     }
 
-    private void makeKing(Node nodec, int tempc, int tempr){
+    public void makeKing(Node nodec, int tempc, int tempr){
         //This method sets the crown image of the turn and sets its ID to the corresponding color
         Image img = new Image("/sample/RedCrown.png");
         if(playerturn == 0){
@@ -161,7 +169,7 @@ public class Controller{
         PieceGrids.getChildren().remove(nodec);
         PieceGrids.add(crown, tempc, tempr);
     }
-    private void getAllPieces(){
+    public void getAllPieces(){
         //This method saves all the pieces and tiles to be used later
         allBoardPieces.clear();
         for(Node i: PieceGrids.getChildren()){
