@@ -93,29 +93,29 @@ public class Controller{
         //Checks if the row or column is within a moving range
         return number <= 7 && number >= 0;
     }
-    private void movesPieces(Node n, int c, int r){
+    private void movesPieces(Node n, int r, int c){
         //This method shows what move each tile from each player can do
         if (playerturn == 0) {
             if (n instanceof Circle){
-                goUp(c,r);
+                goUp(r,c);
             }
             if(n instanceof ImageView){
-                goUp(c,r);
-                goDown(c,r);
+                goUp(r,c);
+                goDown(r,c);
             }
         }
         if(playerturn == 1) {
             if (n instanceof Circle){
-                goDown(c,r);
+                goDown(r,c);
             }
             if(n instanceof ImageView){
-                goUp(c,r);
-                goDown(c,r);
+                goUp(r,c);
+                goDown(r,c);
             }
         }
     }
 
-    private void goUp(int c, int r){
+    private void goUp(int r, int c){
         //This allows tile to go up
         if(isValidRange(c-1) && isValidRange(r-1)&& !checkMoves(c-1,r-1)){
             checkMoves(c-2,r-2);
@@ -125,7 +125,7 @@ public class Controller{
         }
     }
 
-    private void goDown(int c, int r){
+    private void goDown(int r, int c){
         //This allows the tile to go down
         if(isValidRange(c-1) && isValidRange(r+1)&& !checkMoves(c-1,r+1)){
             checkMoves(c-2,r+2);
@@ -143,7 +143,7 @@ public class Controller{
         }
         return false;
     }
-    private boolean checkFreeTile(int c, int r){
+    private boolean checkFreeTile(int r, int c){
         //check if diagonals of first click has other tiles
         return !allBoardPieces.keySet().contains(new Point(c, r));
     }
